@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/FirstFragment">
+
+    <fragment
+        android:id="@+id/FirstFragment"
+        android:name="horizonstudio.apps.pocktel.ScanFragment"
+        android:label="@string/scan_fragment_label"
+        tools:layout="@layout/fragment_scan">
+
+        <action
+            android:id="@+id/action_FirstFragment_to_SecondFragment"
+            app:destination="@id/SecondFragment">
+            <argument
+                android:name="hash"
+                app:argType="string" />
+            <argument
+                android:name="result"
+                app:argType="horizonstudio.apps.pocktel.contracts.incoming.ScanResultContract" />
+        </action>
+    </fragment>
+    <fragment
+        android:id="@+id/SecondFragment"
+        android:name="horizonstudio.apps.pocktel.ResultFragment"
+        android:label="@string/result_fragment_label"
+        tools:layout="@layout/fragment_result">
+
+        <action
+            android:id="@+id/action_SecondFragment_to_FirstFragment"
+            app:destination="@id/FirstFragment" />
+    </fragment>
+</navigation>

@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Pocktel</string>
+    <string name="action_settings">Settings</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="scan_fragment_label">Scan file</string>
+    <string name="result_fragment_label">Scan result</string>
+    <string name="scan">Scan</string>
+</resources>
