@@ -12,6 +12,10 @@ import android.widget.EditText
 import androidx.activity.result.contract.ActivityResultContracts.*
 import androidx.navigation.fragment.findNavController
 import horizonstudio.apps.pocktel.bl.scanners.FileScanner
+import horizonstudio.apps.pocktel.configurations.Constants.ALL_FILES_PATTERN
+import horizonstudio.apps.pocktel.configurations.Constants.ARCHIVED_FILES_PATTERN
+import horizonstudio.apps.pocktel.configurations.Constants.HASH_ARGUMENT_NAME
+import horizonstudio.apps.pocktel.configurations.Constants.RESULT_ARGUMENT_NAME
 import horizonstudio.apps.pocktel.contracts.incoming.ScanResultContract
 import horizonstudio.apps.pocktel.databinding.FragmentScanBinding
 import horizonstudio.apps.pocktel.exceptions.PocktelInvalidArgumentsException
@@ -23,9 +27,6 @@ import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.net.URL
 
-/**
- * A simple [Fragment] subclass as the default destination in the navigation.
- */
 class ScanFragment : Fragment() {
     private var scanner: FileScanner = FileScanner()
     private var _binding: FragmentScanBinding? = null
@@ -66,11 +67,11 @@ class ScanFragment : Fragment() {
         }
 
         binding.chooseFileButton.setOnClickListener {
-            chooseSample.launch(arrayOf("*/*"))
+            chooseSample.launch(arrayOf(ALL_FILES_PATTERN))
         }
 
         binding.chooseRuleFileButton.setOnClickListener {
-            chooseRuleSet.launch(arrayOf("application/zip"))
+            chooseRuleSet.launch(arrayOf(ARCHIVED_FILES_PATTERN))
         }
 
         binding.scanButton.setOnClickListener {
@@ -81,8 +82,8 @@ class ScanFragment : Fragment() {
                 var result: ScanResultContract
                 runBlocking { result = scanner.scan(sampleFile!!, ruleSetFile!!) }
                 val args = Bundle()
-                args.putString("hash", hash)
-                args.putParcelable("result", result)
+                args.putString(HASH_ARGUMENT_NAME, hash)
+                args.putParcelable(RESULT_ARGUMENT_NAME, result)
                 findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment, args)
             }
         }
@@ -96,7 +97,7 @@ class ScanFragment : Fragment() {
             val okButton = dialog.findViewById<Button>(R.id.ok_button)
 
             okButton.setOnClickListener {
-                val plainUrl = inputText.text.toString();
+                val plainUrl = inputText.text.toString()
                 binding.ruleSetFileName.setText(plainUrl)
                 Thread {
                     dialog.dismiss()

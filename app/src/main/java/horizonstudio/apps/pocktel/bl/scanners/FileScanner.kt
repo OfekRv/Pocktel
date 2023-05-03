@@ -2,9 +2,11 @@ package horizonstudio.apps.pocktel.bl.scanners
 
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import horizonstudio.apps.pocktel.configurations.MyConstants.BASE_URL
-import horizonstudio.apps.pocktel.configurations.MyConstants.MAX_TRIES
-import horizonstudio.apps.pocktel.configurations.MyConstants.TIME_INTERVAL
+import horizonstudio.apps.pocktel.configurations.Constants.BASE_URL
+import horizonstudio.apps.pocktel.configurations.Constants.MAX_TRIES
+import horizonstudio.apps.pocktel.configurations.Constants.RULES_PARAMETER_NAME
+import horizonstudio.apps.pocktel.configurations.Constants.SAMPLE_PARAMETER_NAME
+import horizonstudio.apps.pocktel.configurations.Constants.TIME_INTERVAL
 import horizonstudio.apps.pocktel.contracts.incoming.ScanResourceStatusContract
 import horizonstudio.apps.pocktel.contracts.incoming.ScanResultContract
 import horizonstudio.apps.pocktel.contracts.incoming.ScanStatus
@@ -29,7 +31,7 @@ class FileScanner {
 
     suspend fun scan(sample: File, rules: File): ScanResultContract {
         val scanResource = scannerClient.scanWithArchivedRulesSet(
-            createMultipartFile(sample, "sample"), createMultipartFile(rules, "rules")
+            createMultipartFile(sample, SAMPLE_PARAMETER_NAME), createMultipartFile(rules, RULES_PARAMETER_NAME)
         ).body() ?: throw PocktelNetworkException("Could not get server response")
 
         var scanRequestResource: ScanResourceStatusContract
