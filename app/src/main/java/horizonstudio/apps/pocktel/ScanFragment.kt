@@ -11,14 +11,22 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.activity.result.contract.ActivityResultContracts.*
 import androidx.navigation.fragment.findNavController
+import androidx.room.Room
+import horizonstudio.apps.pocktel.bl.RuleSetBl
 import horizonstudio.apps.pocktel.bl.scanners.FileScanner
 import horizonstudio.apps.pocktel.configurations.Constants.ALL_FILES_PATTERN
 import horizonstudio.apps.pocktel.configurations.Constants.ARCHIVED_FILES_PATTERN
+import horizonstudio.apps.pocktel.configurations.Constants.DATABASE_NAME
 import horizonstudio.apps.pocktel.configurations.Constants.HASH_ARGUMENT_NAME
 import horizonstudio.apps.pocktel.configurations.Constants.RESULT_ARGUMENT_NAME
 import horizonstudio.apps.pocktel.contracts.incoming.ScanResultContract
+import horizonstudio.apps.pocktel.dal.PocktelDatabase
+import horizonstudio.apps.pocktel.dal.entities.RuleSet
+import horizonstudio.apps.pocktel.dal.repositories.RuleSetRepository
 import horizonstudio.apps.pocktel.databinding.FragmentScanBinding
 import horizonstudio.apps.pocktel.exceptions.PocktelInvalidArgumentsException
+import horizonstudio.apps.pocktel.utils.DatabaseUtil
+import horizonstudio.apps.pocktel.utils.DatabaseUtil.Companion.buildDatabase
 import horizonstudio.apps.pocktel.utils.FileUtil.Companion.downloadFile
 import horizonstudio.apps.pocktel.utils.FileUtil.Companion.getFileName
 import horizonstudio.apps.pocktel.utils.FileUtil.Companion.saveTempFile
@@ -29,6 +37,14 @@ import java.net.URL
 
 class ScanFragment : Fragment() {
     private var scanner: FileScanner = FileScanner()
+    private val ruleSetBl: RuleSetBl by lazy {
+        RuleSetBl(
+            Room.databaseBuilder(requireContext(), PocktelDatabase::class.java, DATABASE_NAME)
+                .allowMainThreadQueries()
+                .build().ruleSetRepository()
+        )
+    }
+
     private var _binding: FragmentScanBinding? = null
 
     private var sampleFile: File? = null
@@ -39,8 +55,7 @@ class ScanFragment : Fragment() {
     private val binding get() = _binding!!
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
 
         _binding = FragmentScanBinding.inflate(inflater, container, false)
@@ -62,6 +77,7 @@ class ScanFragment : Fragment() {
             uri?.let {
                 val name = getFileName(uri, requireContext())
                 ruleSetFile = saveTempFile(uri, name, requireContext())
+                ruleSetBl.save(RuleSet(0, ruleSetFile!!.name, ruleSetFile!!.path, null))
                 binding.ruleSetFileName.setText(name)
             }
         }
@@ -77,15 +93,15 @@ class ScanFragment : Fragment() {
         binding.scanButton.setOnClickListener {
             if (sampleFile == null || ruleSetFile == null) {
                 throw PocktelInvalidArgumentsException("Please choose sample file and rules to scan")
-            } else {
-                val hash = sha256(sampleFile!!)
-                var result: ScanResultContract
-                runBlocking { result = scanner.scan(sampleFile!!, ruleSetFile!!) }
-                val args = Bundle()
-                args.putString(HASH_ARGUMENT_NAME, hash)
-                args.putParcelable(RESULT_ARGUMENT_NAME, result)
-                findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment, args)
             }
+
+            val hash = sha256(sampleFile!!)
+            var result: ScanResultContract
+            runBlocking { result = scanner.scan(sampleFile!!, ruleSetFile!!) }
+            val args = Bundle()
+            args.putString(HASH_ARGUMENT_NAME, hash)
+            args.putParcelable(RESULT_ARGUMENT_NAME, result)
+            findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment, args)
         }
 
         val popupButton = requireView().findViewById<Button>(R.id.chooseRuleUrlButton)
@@ -102,6 +118,7 @@ class ScanFragment : Fragment() {
                 Thread {
                     dialog.dismiss()
                     ruleSetFile = downloadFile(URL(plainUrl))
+                    ruleSetBl.save(RuleSet(0, ruleSetFile!!.name, null, plainUrl))
                 }.start()
             }
 
