@@ -3,13 +3,14 @@ package horizonstudio.apps.pocktel
 import android.app.Dialog
 import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Spinner
 import androidx.activity.result.contract.ActivityResultContracts.*
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.room.Room
 import horizonstudio.apps.pocktel.bl.RuleSetBl
@@ -18,15 +19,14 @@ import horizonstudio.apps.pocktel.configurations.Constants.ALL_FILES_PATTERN
 import horizonstudio.apps.pocktel.configurations.Constants.ARCHIVED_FILES_PATTERN
 import horizonstudio.apps.pocktel.configurations.Constants.DATABASE_NAME
 import horizonstudio.apps.pocktel.configurations.Constants.HASH_ARGUMENT_NAME
+import horizonstudio.apps.pocktel.configurations.Constants.NOT_YET_ASSIGNED_ID
 import horizonstudio.apps.pocktel.configurations.Constants.RESULT_ARGUMENT_NAME
 import horizonstudio.apps.pocktel.contracts.incoming.ScanResultContract
 import horizonstudio.apps.pocktel.dal.PocktelDatabase
 import horizonstudio.apps.pocktel.dal.entities.RuleSet
-import horizonstudio.apps.pocktel.dal.repositories.RuleSetRepository
 import horizonstudio.apps.pocktel.databinding.FragmentScanBinding
 import horizonstudio.apps.pocktel.exceptions.PocktelInvalidArgumentsException
-import horizonstudio.apps.pocktel.utils.DatabaseUtil
-import horizonstudio.apps.pocktel.utils.DatabaseUtil.Companion.buildDatabase
+import horizonstudio.apps.pocktel.ui.adpters.RuleSetListAdapter
 import horizonstudio.apps.pocktel.utils.FileUtil.Companion.downloadFile
 import horizonstudio.apps.pocktel.utils.FileUtil.Companion.getFileName
 import horizonstudio.apps.pocktel.utils.FileUtil.Companion.saveTempFile
@@ -35,13 +35,13 @@ import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.net.URL
 
+
 class ScanFragment : Fragment() {
     private var scanner: FileScanner = FileScanner()
     private val ruleSetBl: RuleSetBl by lazy {
         RuleSetBl(
             Room.databaseBuilder(requireContext(), PocktelDatabase::class.java, DATABASE_NAME)
-                .allowMainThreadQueries()
-                .build().ruleSetRepository()
+                .allowMainThreadQueries().build().ruleSetRepository()
         )
     }
 
@@ -65,6 +65,9 @@ class ScanFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val spinner: Spinner = view.findViewById(R.id.rule_set_spinner) as Spinner
+        spinner.adapter = RuleSetListAdapter(requireContext(), ruleSetBl.findAll())
+
         val chooseSample = registerForActivityResult(OpenDocument()) { uri: Uri? ->
             uri?.let {
                 val name = getFileName(uri, requireContext())
@@ -77,7 +80,15 @@ class ScanFragment : Fragment() {
             uri?.let {
                 val name = getFileName(uri, requireContext())
                 ruleSetFile = saveTempFile(uri, name, requireContext())
-                ruleSetBl.save(RuleSet(0, ruleSetFile!!.name, ruleSetFile!!.path, null))
+                ruleSetBl.save(
+                    RuleSet(
+                        NOT_YET_ASSIGNED_ID,
+                        ruleSetFile!!.nameWithoutExtension,
+                        ruleSetFile!!.path,
+                        null
+                    )
+                )
+                spinner.adapter = RuleSetListAdapter(requireContext(), ruleSetBl.findAll())
                 binding.ruleSetFileName.setText(name)
             }
         }
@@ -118,7 +129,13 @@ class ScanFragment : Fragment() {
                 Thread {
                     dialog.dismiss()
                     ruleSetFile = downloadFile(URL(plainUrl))
-                    ruleSetBl.save(RuleSet(0, ruleSetFile!!.name, null, plainUrl))
+                    ruleSetBl.save(
+                        RuleSet(
+                            NOT_YET_ASSIGNED_ID, ruleSetFile!!.nameWithoutExtension, null, plainUrl
+                        )
+                    )
+                    spinner.adapter = RuleSetListAdapter(requireContext(), ruleSetBl.findAll())
+
                 }.start()
             }
 

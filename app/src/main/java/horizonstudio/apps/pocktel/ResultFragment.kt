@@ -41,7 +41,6 @@ class ResultFragment : Fragment() {
         }
 
         hash = arguments?.getString(HASH_ARGUMENT_NAME)!!
-        //TODO: api 33 level
         scanResult = arguments?.getParcelable<ScanResultContract>(RESULT_ARGUMENT_NAME)!!
         (activity as AppCompatActivity).supportActionBar?.title = hash
         binding.hash.text = hash

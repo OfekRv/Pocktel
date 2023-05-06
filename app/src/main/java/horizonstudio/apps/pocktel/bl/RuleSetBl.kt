@@ -4,7 +4,7 @@ import horizonstudio.apps.pocktel.dal.entities.RuleSet
 import horizonstudio.apps.pocktel.dal.repositories.RuleSetRepository
 
 class RuleSetBl(private val repository: RuleSetRepository) {
-    fun findAll(): Collection<RuleSet> {
+    fun findAll(): List<RuleSet> {
         return repository.findAll()
     }
 

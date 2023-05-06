@@ -12,4 +12,5 @@ object Constants {
     const val SAMPLE_PARAMETER_NAME: String = "sample"
     const val RULES_PARAMETER_NAME: String = "rules"
     const val HASH_COPY_CLIPBOARD_LABEL: String = "hash"
+    const val NOT_YET_ASSIGNED_ID: Long = 0
 }
