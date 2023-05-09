@@ -2,7 +2,7 @@ package horizonstudio.apps.pocktel.configurations
 
 object Constants {
     const val DATABASE_NAME:String = "pocktel"
-    const val BASE_URL:String = "https://yarapi-a2zphhdpma-uc.a.run.app"
+    const val BASE_URL:String = "https://yarapi-a2zphhdpma-uc.a.run.appT"
     const val MAX_TRIES: Int = 20
     const val TIME_INTERVAL: Long = 500
     const val HASH_ARGUMENT_NAME: String = "hash"
@@ -13,4 +13,5 @@ object Constants {
     const val RULES_PARAMETER_NAME: String = "rules"
     const val HASH_COPY_CLIPBOARD_LABEL: String = "hash"
     const val NOT_YET_ASSIGNED_ID: Long = 0
+    const val TEXT_PLAIN_RESPONSE_MEDIA_TYPE = "text/plain"
 }
