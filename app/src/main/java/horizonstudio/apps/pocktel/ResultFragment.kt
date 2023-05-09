@@ -18,6 +18,7 @@ import horizonstudio.apps.pocktel.databinding.FragmentResultBinding
 import horizonstudio.apps.pocktel.exceptions.PocktelInvalidArgumentsException
 import horizonstudio.apps.pocktel.ui.adpters.MatchesListAdapter
 
+// TODO: Organize layout
 class ResultFragment : Fragment() {
     private lateinit var hash: String
     private lateinit var scanResult: ScanResultContract

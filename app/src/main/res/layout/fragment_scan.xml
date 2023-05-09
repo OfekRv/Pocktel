@@ -18,32 +18,16 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.369" />
 
-    <EditText
-        android:id="@+id/rule_set_file_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:gravity="start|top"
-        android:inputType="textMultiLine"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/sampleFileName"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/ruleText"
-        app:layout_constraintTop_toBottomOf="@+id/ruleText"
-        app:layout_constraintVertical_bias="0.083"
-        tools:text="@tools:sample/cities" />
-
     <Button
         android:id="@+id/chooseRuleFileButton"
         android:layout_width="70dp"
         android:layout_height="45dp"
         android:text="file"
-        app:layout_constraintBottom_toBottomOf="@+id/rule_set_file_name"
+        app:layout_constraintBottom_toBottomOf="@+id/rule_set_spinner"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.756"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/rule_set_file_name"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toTopOf="@+id/rule_set_spinner" />
 
     <Button
         android:id="@+id/chooseRuleUrlButton"
@@ -51,13 +35,12 @@
         android:layout_height="45dp"
         android:layout_marginStart="13dp"
         android:text="url"
-        app:layout_constraintBottom_toBottomOf="@+id/rule_set_file_name"
+        app:layout_constraintBottom_toBottomOf="@+id/chooseRuleFileButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/chooseRuleFileButton"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/rule_set_file_name"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toTopOf="@+id/chooseRuleFileButton" />
 
     <Button
         android:id="@+id/scanButton"
@@ -112,11 +95,13 @@
 
     <Spinner
         android:id="@+id/rule_set_spinner"
-        android:layout_width="207dp"
-        android:layout_height="28dp"
-        app:layout_constraintEnd_toEndOf="@+id/rule_set_file_name"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/rule_set_file_name"
-        app:layout_constraintTop_toBottomOf="@+id/rule_set_file_name" />
+        android:layout_width="219dp"
+        android:layout_height="45dp"
+        app:layout_constraintBottom_toTopOf="@+id/scanButton"
+        app:layout_constraintEnd_toStartOf="@+id/chooseRuleFileButton"
+        app:layout_constraintHorizontal_bias="0.82"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ruleText"
+        app:layout_constraintVertical_bias="0.113" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

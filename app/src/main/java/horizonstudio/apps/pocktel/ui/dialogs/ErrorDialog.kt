@@ -3,6 +3,7 @@ package horizonstudio.apps.pocktel.ui.dialogs
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface.OnClickListener
+import horizonstudio.apps.pocktel.configurations.Constants.ERROR_DIALOG_TITLE
 
 class ErrorDialog {
     companion object {
@@ -12,7 +13,7 @@ class ErrorDialog {
 
         fun errorDialog(context: Context, error: String, listener: OnClickListener?) {
             AlertDialog.Builder(context)
-                .setTitle("Error")
+                .setTitle(ERROR_DIALOG_TITLE)
                 .setNegativeButton("Ok", listener)
                 .setMessage(error)
                 .show()

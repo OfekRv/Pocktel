@@ -42,11 +42,12 @@ import kotlinx.coroutines.*
 import java.io.File
 import java.net.URL
 
-// TODO: PocktelException handling
-// TODO: naming url rule sets
+// TODO: PocktelException handling (wrong host)
+// TODO: naming url rule sets with dialogs
 // TODO: loading fragment when upload or scan
 // TODO: DB seed
 // TODO: work with coroutine (network, db?)
+// TODO: beautify layout
 class ScanFragment : Fragment() {
     private var _binding: FragmentScanBinding? = null
 
@@ -103,7 +104,6 @@ class ScanFragment : Fragment() {
                     )
                 )
                 spinner.adapter = RuleSetListAdapter(requireContext(), ruleSetBl.findAll())
-                binding.ruleSetFileName.setText(name)
             }
         }
 
@@ -115,7 +115,9 @@ class ScanFragment : Fragment() {
             chooseRuleSet.launch(arrayOf(ARCHIVED_FILES_PATTERN))
         }
 
-        binding.scanButton.setOnClickListener { scan() }
+        binding.scanButton.setOnClickListener {
+            scan()
+        }
 
         val popupButton = requireView().findViewById<Button>(R.id.chooseRuleUrlButton)
         popupButton.setOnClickListener {
@@ -127,7 +129,8 @@ class ScanFragment : Fragment() {
 
             okButton.setOnClickListener {
                 val plainUrl = inputText.text.toString()
-                binding.ruleSetFileName.setText(plainUrl)
+                // TODO: coroutine
+                // TODO: wait popup
                 Thread {
                     dialog.dismiss()
                     ruleSetFile = downloadFile(URL(plainUrl))
@@ -146,7 +149,13 @@ class ScanFragment : Fragment() {
     }
 
     private fun scan() {
-        validateScanInputs()
+        try {
+            validateScanInputs()
+        } catch (e: PocktelException) {
+            errorDialog(requireContext(), e.message!!)
+            return
+        }
+
         uiScope.launch {
             ruleSetFile = prepareRuleSetFile(binding.ruleSetSpinner.selectedItem as RuleSet)
             val hash = sha256(sampleFile!!)

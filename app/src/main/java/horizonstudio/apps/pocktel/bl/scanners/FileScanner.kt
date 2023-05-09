@@ -8,6 +8,7 @@ import horizonstudio.apps.pocktel.configurations.Constants.RULES_PARAMETER_NAME
 import horizonstudio.apps.pocktel.configurations.Constants.SAMPLE_PARAMETER_NAME
 import horizonstudio.apps.pocktel.configurations.Constants.TEXT_PLAIN_RESPONSE_MEDIA_TYPE
 import horizonstudio.apps.pocktel.configurations.Constants.TIME_INTERVAL
+import horizonstudio.apps.pocktel.contracts.incoming.ScanResourceContract
 import horizonstudio.apps.pocktel.contracts.incoming.ScanResourceStatusContract
 import horizonstudio.apps.pocktel.contracts.incoming.ScanResultContract
 import horizonstudio.apps.pocktel.contracts.incoming.ScanStatus
@@ -15,6 +16,7 @@ import horizonstudio.apps.pocktel.exceptions.PocktelNetworkException
 import horizonstudio.apps.pocktel.exceptions.PocktelYARARuleFileException
 import horizonstudio.apps.pocktel.services.FileScannerService
 import horizonstudio.apps.pocktel.utils.FileUtil.Companion.createMultipartFile
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.io.File
@@ -31,34 +33,43 @@ class FileScanner {
     }
 
     suspend fun scan(sample: File, rules: File): ScanResultContract {
-        val scanResource = scannerClient.scanWithArchivedRulesSet(
+        val scanRequestResource = scannerClient.scanWithArchivedRulesSet(
             createMultipartFile(sample, SAMPLE_PARAMETER_NAME),
             createMultipartFile(rules, RULES_PARAMETER_NAME)
         )
 
-        if (!scanResource.isSuccessful) {
-            scanResource.errorBody()
-                ?.let { serverError ->
-                    {
-                        if (serverError.contentType()!!.equals(TEXT_PLAIN_RESPONSE_MEDIA_TYPE)) {
-                            throw PocktelYARARuleFileException(serverError.string())
-                        }
-                    }
-                }
-            throw PocktelNetworkException("Could not get server response")
+        if (!scanRequestResource.isSuccessful) {
+            handleUnsuccessfulRequest(scanRequestResource)
         }
 
-        var scanRequestResource: ScanResourceStatusContract
+        val scanResultResourceReference: String =
+            getScanResourceReference(scanRequestResource.body()!!.location)
+        return scannerClient.scanResult(scanResultResourceReference).body()!!
+    }
+
+
+    private fun handleUnsuccessfulRequest(scanResource: Response<ScanResourceContract>) {
+        scanResource.errorBody()?.let { serverError ->
+                {
+                    if (serverError.contentType()!!.equals(TEXT_PLAIN_RESPONSE_MEDIA_TYPE)) {
+                        throw PocktelYARARuleFileException(serverError.string())
+                    }
+                }
+            }
+        throw PocktelNetworkException("Could not get server response")
+    }
+
+    private suspend fun getScanResourceReference(scanResourceLocation: String): String {
+        var scanResultResource: ScanResourceStatusContract
         var tries = 0
         do {
             Thread.sleep(TIME_INTERVAL)
-            scanRequestResource = scannerClient.scanStatus(scanResource.body()!!.location).body()!!
-        } while (scanRequestResource.status == ScanStatus.PENDING && ++tries <= MAX_TRIES)
+            scanResultResource = scannerClient.scanStatus(scanResourceLocation).body()!!
+        } while (scanResultResource.status == ScanStatus.PENDING && ++tries <= MAX_TRIES)
 
-        if (scanRequestResource.status != ScanStatus.COMPLETED) {
+        if (scanResultResource.status != ScanStatus.COMPLETED) {
             throw PocktelNetworkException("Unexpected error with the server, please try again")
         }
-
-        return scannerClient.scanResult(scanRequestResource.result!!).body()!!
+        return scanResultResource.result!!
     }
 }
