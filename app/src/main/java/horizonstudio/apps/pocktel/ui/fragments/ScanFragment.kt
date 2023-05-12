@@ -1,20 +1,18 @@
-package horizonstudio.apps.pocktel
+package horizonstudio.apps.pocktel.ui.fragments
 
-import android.app.Dialog
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.OnClickListener
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.EditText
 import android.widget.Spinner
 import androidx.activity.result.contract.ActivityResultContracts.*
 import androidx.core.view.isEmpty
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.room.Room
+import horizonstudio.apps.pocktel.R
 import horizonstudio.apps.pocktel.bl.RuleSetBl
 import horizonstudio.apps.pocktel.bl.scanners.FileScanner
 import horizonstudio.apps.pocktel.configurations.Constants.ALL_FILES_PATTERN
@@ -30,9 +28,8 @@ import horizonstudio.apps.pocktel.databinding.FragmentScanBinding
 import horizonstudio.apps.pocktel.exceptions.PocktelException
 import horizonstudio.apps.pocktel.exceptions.PocktelInvalidArgumentsException
 import horizonstudio.apps.pocktel.ui.adpters.RuleSetListAdapter
-import horizonstudio.apps.pocktel.ui.dialogs.ErrorDialog
 import horizonstudio.apps.pocktel.ui.dialogs.ErrorDialog.Companion.errorDialog
-import horizonstudio.apps.pocktel.utils.DatabaseUtil
+import horizonstudio.apps.pocktel.ui.dialogs.RuleSetDialog
 import horizonstudio.apps.pocktel.utils.DatabaseUtil.Companion.buildDatabase
 import horizonstudio.apps.pocktel.utils.FileUtil.Companion.downloadFile
 import horizonstudio.apps.pocktel.utils.FileUtil.Companion.getFileName
@@ -42,11 +39,10 @@ import kotlinx.coroutines.*
 import java.io.File
 import java.net.URL
 
-// TODO: PocktelException handling (wrong host)
-// TODO: naming url rule sets with dialogs
 // TODO: loading fragment when upload or scan
 // TODO: DB seed
 // TODO: work with coroutine (network, db?)
+// TODO: PocktelException handling (wrong host)
 // TODO: beautify layout
 class ScanFragment : Fragment() {
     private var _binding: FragmentScanBinding? = null
@@ -91,20 +87,22 @@ class ScanFragment : Fragment() {
             }
         }
 
-        val chooseRuleSet = registerForActivityResult(OpenDocument()) { uri: Uri? ->
+        val chooseRuleSetName = registerForActivityResult(OpenDocument()) { uri: Uri? ->
             uri?.let {
-                val name = getFileName(uri, requireContext())
-                ruleSetFile = saveTempFile(uri, name, requireContext())
-                ruleSetBl.save(
-                    RuleSet(
-                        NOT_YET_ASSIGNED_ID,
-                        ruleSetFile!!.nameWithoutExtension,
-                        ruleSetFile!!.path,
-                        null
-                    )
+                val fileName = getFileName(uri, requireContext())
+                RuleSetDialog.chooseRuleSetNameDialog(
+                    requireContext(), saveRuleSet(uri, fileName, spinner)
                 )
-                spinner.adapter = RuleSetListAdapter(requireContext(), ruleSetBl.findAll())
             }
+        }
+
+        val chooseRuleSetUrl = requireView().findViewById<Button>(R.id.chooseRuleUrlButton)
+        chooseRuleSetUrl.setOnClickListener {
+            RuleSetDialog.chooseRuleSetUrlDialog(requireContext(), downloadRuleSet(spinner))
+        }
+
+        binding.scanButton.setOnClickListener {
+            scan()
         }
 
         binding.chooseFileButton.setOnClickListener {
@@ -112,39 +110,48 @@ class ScanFragment : Fragment() {
         }
 
         binding.chooseRuleFileButton.setOnClickListener {
-            chooseRuleSet.launch(arrayOf(ARCHIVED_FILES_PATTERN))
+            chooseRuleSetName.launch(arrayOf(ARCHIVED_FILES_PATTERN))
         }
 
-        binding.scanButton.setOnClickListener {
-            scan()
-        }
 
-        val popupButton = requireView().findViewById<Button>(R.id.chooseRuleUrlButton)
-        popupButton.setOnClickListener {
-            val dialog = Dialog(requireContext())
-            dialog.setContentView(R.layout.choose_rules_url)
 
-            val inputText = dialog.findViewById<EditText>(R.id.input_text)
-            val okButton = dialog.findViewById<Button>(R.id.ok_button)
 
-            okButton.setOnClickListener {
-                val plainUrl = inputText.text.toString()
-                // TODO: coroutine
-                // TODO: wait popup
-                Thread {
-                    dialog.dismiss()
-                    ruleSetFile = downloadFile(URL(plainUrl))
-                    ruleSetBl.save(
-                        RuleSet(
-                            NOT_YET_ASSIGNED_ID, ruleSetFile!!.nameWithoutExtension, null, plainUrl
-                        )
-                    )
-                    spinner.adapter = RuleSetListAdapter(requireContext(), ruleSetBl.findAll())
+    }
 
-                }.start()
+    private fun downloadRuleSet(spinner: Spinner): OnClickListener {
+        return OnClickListener {
+            var params = it.tag as HashMap<String, String>
+            // TODO: validate inputs
+            val name: String = params["name"]!!
+            val plainUrl: String = params["url"]!!
+
+            // TODO: wait popup
+            uiScope.launch {
+                ruleSetFile = downloadFile(URL(plainUrl))
+                ruleSetBl.save(
+                    RuleSet(NOT_YET_ASSIGNED_ID, name, null, plainUrl)
+                )
+                spinner.adapter = RuleSetListAdapter(requireContext(), ruleSetBl.findAll())
             }
+        }
+    }
 
-            dialog.show()
+    private fun saveRuleSet(
+        uri: Uri, fileName: String, spinner: Spinner
+    ): OnClickListener {
+        return OnClickListener() { view ->
+            // TODO: validate inputs
+            val ruleSetName = view.tag as String
+            uiScope.launch {
+                // TODO: wait popup
+                ruleSetFile = saveTempFile(uri, fileName, requireContext())
+                ruleSetBl.save(
+                    RuleSet(
+                        NOT_YET_ASSIGNED_ID, ruleSetName, ruleSetFile!!.path, null
+                    )
+                )
+                spinner.adapter = RuleSetListAdapter(requireContext(), ruleSetBl.findAll())
+            }
         }
     }
 
@@ -185,8 +192,7 @@ class ScanFragment : Fragment() {
     }
 
     private fun transferToResultFragment(
-        hash: String,
-        result: ScanResultContract
+        hash: String, result: ScanResultContract
     ) {
         val args = Bundle()
         args.putString(HASH_ARGUMENT_NAME, hash)

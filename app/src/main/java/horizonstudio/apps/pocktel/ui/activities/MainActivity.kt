@@ -1,7 +1,6 @@
-package horizonstudio.apps.pocktel
+package horizonstudio.apps.pocktel.ui.activities
 
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -9,6 +8,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
+import horizonstudio.apps.pocktel.R
 import horizonstudio.apps.pocktel.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {

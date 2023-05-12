@@ -1,4 +1,4 @@
-package horizonstudio.apps.pocktel
+package horizonstudio.apps.pocktel.ui.fragments
 
 import android.content.ClipData
 import android.content.Context

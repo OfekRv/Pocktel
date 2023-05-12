@@ -8,10 +8,10 @@
     android:padding="16dp">
 
     <EditText
-        android:id="@+id/input_text"
+        android:id="@+id/rule_set_name"
         android:layout_width="293dp"
         android:layout_height="54dp"
-        android:hint="Enter url"
+        android:hint="rule set name"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -29,7 +29,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/input_text"
+        app:layout_constraintTop_toBottomOf="@+id/rule_set_name"
         tools:layout_conversion_absoluteHeight="48dp"
         tools:layout_conversion_absoluteWidth="379dp" />
 

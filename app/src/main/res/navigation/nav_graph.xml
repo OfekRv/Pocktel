@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/FirstFragment"
-        android:name="horizonstudio.apps.pocktel.ScanFragment"
+        android:name="horizonstudio.apps.pocktel.ui.fragments.ScanFragment"
         android:label="@string/scan_fragment_label"
         tools:layout="@layout/fragment_scan">
 
@@ -24,7 +24,7 @@
     </fragment>
     <fragment
         android:id="@+id/SecondFragment"
-        android:name="horizonstudio.apps.pocktel.ResultFragment"
+        android:name="horizonstudio.apps.pocktel.ui.fragments.ResultFragment"
         android:label="@string/result_fragment_label"
         tools:layout="@layout/fragment_result">
 
