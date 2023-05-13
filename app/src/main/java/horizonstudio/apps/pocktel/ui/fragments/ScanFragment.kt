@@ -41,9 +41,9 @@ import java.net.URL
 
 // TODO: loading fragment when upload or scan
 // TODO: DB seed
-// TODO: work with coroutine (network, db?)
-// TODO: PocktelException handling (wrong host)
 // TODO: beautify layout
+// TODO: PocktelException handling (wrong host)
+// TODO: work with coroutine (db?)
 class ScanFragment : Fragment() {
     private var _binding: FragmentScanBinding? = null
 
@@ -112,47 +112,11 @@ class ScanFragment : Fragment() {
         binding.chooseRuleFileButton.setOnClickListener {
             chooseRuleSetName.launch(arrayOf(ARCHIVED_FILES_PATTERN))
         }
-
-
-
-
     }
 
-    private fun downloadRuleSet(spinner: Spinner): OnClickListener {
-        return OnClickListener {
-            var params = it.tag as HashMap<String, String>
-            // TODO: validate inputs
-            val name: String = params["name"]!!
-            val plainUrl: String = params["url"]!!
-
-            // TODO: wait popup
-            uiScope.launch {
-                ruleSetFile = downloadFile(URL(plainUrl))
-                ruleSetBl.save(
-                    RuleSet(NOT_YET_ASSIGNED_ID, name, null, plainUrl)
-                )
-                spinner.adapter = RuleSetListAdapter(requireContext(), ruleSetBl.findAll())
-            }
-        }
-    }
-
-    private fun saveRuleSet(
-        uri: Uri, fileName: String, spinner: Spinner
-    ): OnClickListener {
-        return OnClickListener() { view ->
-            // TODO: validate inputs
-            val ruleSetName = view.tag as String
-            uiScope.launch {
-                // TODO: wait popup
-                ruleSetFile = saveTempFile(uri, fileName, requireContext())
-                ruleSetBl.save(
-                    RuleSet(
-                        NOT_YET_ASSIGNED_ID, ruleSetName, ruleSetFile!!.path, null
-                    )
-                )
-                spinner.adapter = RuleSetListAdapter(requireContext(), ruleSetBl.findAll())
-            }
-        }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun scan() {
@@ -176,11 +140,6 @@ class ScanFragment : Fragment() {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
     private fun validateScanInputs() {
         if (sampleFile == null) {
             throw PocktelInvalidArgumentsException("Please choose sample file to scan")
@@ -191,13 +150,62 @@ class ScanFragment : Fragment() {
         }
     }
 
-    private fun transferToResultFragment(
-        hash: String, result: ScanResultContract
-    ) {
+    private fun downloadRuleSet(spinner: Spinner): OnClickListener {
+        return OnClickListener {
+            val params = it.tag as HashMap<String, String>
+            // TODO: validate inputs
+            // TODO: consts
+            val name: String = params["name"]!!
+            val plainUrl: String = params["url"]!!
+
+            // TODO: wait popup
+            uiScope.launch {
+                withContext(Dispatchers.IO) {
+                    ruleSetFile = downloadFile(requireContext(), URL(plainUrl))
+                    val ruleId = ruleSetBl.save(
+                        RuleSet(NOT_YET_ASSIGNED_ID, name, null, plainUrl)
+                    )
+
+                    updateRuleSetSpinner(ruleId, spinner)
+                }
+            }
+        }
+    }
+
+    private suspend fun updateRuleSetSpinner(selectedRuleId: Long, spinner: Spinner) {
+        val rules = ruleSetBl.findAll()
+        val ruleIndex = rules.indexOfFirst { ruleSet -> ruleSet.id == selectedRuleId }
+
+        withContext(Dispatchers.Main) {
+            spinner.adapter = RuleSetListAdapter(requireContext(), rules)
+            spinner.setSelection(ruleIndex)
+        }
+    }
+
+    private fun saveRuleSet(
+        uri: Uri, fileName: String, spinner: Spinner
+    ): OnClickListener {
+        return OnClickListener { view ->
+            // TODO: validate inputs
+            val ruleSetName = view.tag as String
+            uiScope.launch {
+                // TODO: wait popup
+                ruleSetFile = saveTempFile(uri, fileName, requireContext())
+                val ruleId = ruleSetBl.save(
+                    RuleSet(
+                        NOT_YET_ASSIGNED_ID, ruleSetName, ruleSetFile!!.path, null
+                    )
+                )
+                updateRuleSetSpinner(ruleId, spinner)
+            }
+        }
+    }
+
+    private fun transferToResultFragment(hash: String, result: ScanResultContract) {
         val args = Bundle()
         args.putString(HASH_ARGUMENT_NAME, hash)
         args.putParcelable(RESULT_ARGUMENT_NAME, result)
-        findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment, args)
+        findNavController().navigate(R.id.action_ScanFragment_to_ResultFragment, args)
     }
 
     private suspend fun prepareRuleSetFile(ruleSet: RuleSet): File {
@@ -205,7 +213,7 @@ class ScanFragment : Fragment() {
         ruleSet.url?.let {
             return withContext(Dispatchers.IO) {
                 return@withContext downloadFile(
-                    URL(
+                    requireContext(), URL(
                         ruleSet.url
                     )
                 )

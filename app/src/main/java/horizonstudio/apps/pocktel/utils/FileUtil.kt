@@ -26,9 +26,9 @@ class FileUtil {
             }
         }
 
-        fun downloadFile(url: URL): File {
+        fun downloadFile(context: Context, url: URL): File {
             val fileName = File(url.file).name
-            val outputFileName = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath + "/" + fileName
+            val outputFileName = context.filesDir.absolutePath + "/" + fileName
 
             url.openStream().use { inputStream ->
                 Channels.newChannel(inputStream).use { rbc ->
