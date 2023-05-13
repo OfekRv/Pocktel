@@ -7,6 +7,7 @@ import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.Spinner
 import androidx.activity.result.contract.ActivityResultContracts.*
 import androidx.core.view.isEmpty
@@ -39,7 +40,7 @@ import kotlinx.coroutines.*
 import java.io.File
 import java.net.URL
 
-// TODO: loading fragment when upload or scan
+// TODO: figure out why loading doesnt shows, change animation, find more places for it
 // TODO: DB seed
 // TODO: beautify layout
 // TODO: PocktelException handling (wrong host)
@@ -52,6 +53,9 @@ class ScanFragment : Fragment() {
     private val binding get() = _binding!!
     private val job = Job()
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
+
+    private lateinit var loadingView: ImageView
+    private lateinit var spinner: Spinner
 
     private var sampleFile: File? = null
     private var ruleSetFile: File? = null
@@ -68,7 +72,6 @@ class ScanFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-
         _binding = FragmentScanBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -76,7 +79,9 @@ class ScanFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val spinner: Spinner = view.findViewById(R.id.rule_set_spinner) as Spinner
+        loadingView = view.findViewById(R.id.loading_view)
+
+        spinner = view.findViewById(R.id.rule_set_spinner) as Spinner
         spinner.adapter = RuleSetListAdapter(requireContext(), ruleSetBl.findAll())
 
         val chooseSample = registerForActivityResult(OpenDocument()) { uri: Uri? ->
@@ -91,14 +96,16 @@ class ScanFragment : Fragment() {
             uri?.let {
                 val fileName = getFileName(uri, requireContext())
                 RuleSetDialog.chooseRuleSetNameDialog(
-                    requireContext(), saveRuleSet(uri, fileName, spinner)
+                    requireContext(), saveRuleSet(uri, fileName)
                 )
             }
         }
 
         val chooseRuleSetUrl = requireView().findViewById<Button>(R.id.chooseRuleUrlButton)
         chooseRuleSetUrl.setOnClickListener {
-            RuleSetDialog.chooseRuleSetUrlDialog(requireContext(), downloadRuleSet(spinner))
+            RuleSetDialog.chooseRuleSetUrlDialog(
+                requireContext(), downloadRuleSet()
+            )
         }
 
         binding.scanButton.setOnClickListener {
@@ -127,6 +134,7 @@ class ScanFragment : Fragment() {
             return
         }
 
+        loadingView.visibility = View.VISIBLE
         uiScope.launch {
             ruleSetFile = prepareRuleSetFile(binding.ruleSetSpinner.selectedItem as RuleSet)
             val hash = sha256(sampleFile!!)
@@ -138,27 +146,18 @@ class ScanFragment : Fragment() {
                 errorDialog(requireContext(), e.message!!)
             }
         }
+        loadingView.visibility = View.GONE
     }
 
-    private fun validateScanInputs() {
-        if (sampleFile == null) {
-            throw PocktelInvalidArgumentsException("Please choose sample file to scan")
-        }
-
-        if (binding.ruleSetSpinner.isEmpty()) {
-            throw PocktelInvalidArgumentsException("Please choose rule set")
-        }
-    }
-
-    private fun downloadRuleSet(spinner: Spinner): OnClickListener {
+    private fun downloadRuleSet(): OnClickListener {
         return OnClickListener {
             val params = it.tag as HashMap<String, String>
             // TODO: validate inputs
+            loadingView.visibility = View.VISIBLE
             // TODO: consts
             val name: String = params["name"]!!
             val plainUrl: String = params["url"]!!
 
-            // TODO: wait popup
             uiScope.launch {
                 withContext(Dispatchers.IO) {
                     ruleSetFile = downloadFile(requireContext(), URL(plainUrl))
@@ -166,13 +165,14 @@ class ScanFragment : Fragment() {
                         RuleSet(NOT_YET_ASSIGNED_ID, name, null, plainUrl)
                     )
 
-                    updateRuleSetSpinner(ruleId, spinner)
+                    updateRuleSetSpinner(ruleId)
                 }
             }
+            loadingView.visibility = View.GONE
         }
     }
 
-    private suspend fun updateRuleSetSpinner(selectedRuleId: Long, spinner: Spinner) {
+    private suspend fun updateRuleSetSpinner(selectedRuleId: Long) {
         val rules = ruleSetBl.findAll()
         val ruleIndex = rules.indexOfFirst { ruleSet -> ruleSet.id == selectedRuleId }
 
@@ -182,22 +182,21 @@ class ScanFragment : Fragment() {
         }
     }
 
-    private fun saveRuleSet(
-        uri: Uri, fileName: String, spinner: Spinner
-    ): OnClickListener {
+    private fun saveRuleSet(uri: Uri, fileName: String): OnClickListener {
         return OnClickListener { view ->
             // TODO: validate inputs
+            loadingView.visibility = View.VISIBLE
             val ruleSetName = view.tag as String
             uiScope.launch {
-                // TODO: wait popup
                 ruleSetFile = saveTempFile(uri, fileName, requireContext())
                 val ruleId = ruleSetBl.save(
                     RuleSet(
                         NOT_YET_ASSIGNED_ID, ruleSetName, ruleSetFile!!.path, null
                     )
                 )
-                updateRuleSetSpinner(ruleId, spinner)
+                updateRuleSetSpinner(ruleId)
             }
+            loadingView.visibility = View.GONE
         }
     }
 
@@ -220,5 +219,15 @@ class ScanFragment : Fragment() {
             }
         }
         throw PocktelInvalidArgumentsException("Could not locate either path nor url of rule set")
+    }
+
+    private fun validateScanInputs() {
+        if (sampleFile == null) {
+            throw PocktelInvalidArgumentsException("Please choose sample file to scan")
+        }
+
+        if (binding.ruleSetSpinner.isEmpty()) {
+            throw PocktelInvalidArgumentsException("Please choose rule set")
+        }
     }
 }

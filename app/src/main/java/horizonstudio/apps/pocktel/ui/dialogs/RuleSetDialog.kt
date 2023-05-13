@@ -25,8 +25,8 @@ class RuleSetDialog {
             val dialog = Dialog(context)
             dialog.setContentView(R.layout.choose_rule_set_url)
             dialog.findViewById<Button>(R.id.ok_button).setOnClickListener {
-                var name: String = dialog.findViewById<EditText>(R.id.rule_set_name).text.toString()
-                var url: String = dialog.findViewById<EditText>(R.id.rule_set_url).text.toString()
+                val name: String = dialog.findViewById<EditText>(R.id.rule_set_name).text.toString()
+                val url: String = dialog.findViewById<EditText>(R.id.rule_set_url).text.toString()
                 it.tag = hashMapOf("name" to name, "url" to url)
                 listener.onClick(it)
                 dialog.dismiss()
