@@ -1,5 +1,7 @@
 package horizonstudio.apps.pocktel.configurations
 
+import horizonstudio.apps.pocktel.dal.entities.RuleSet
+
 object Constants {
     const val DATABASE_NAME:String = "pocktel"
     const val BASE_URL:String = "https://yarapi-a2zphhdpma-uc.a.run.app"
@@ -14,5 +16,12 @@ object Constants {
     const val HASH_COPY_CLIPBOARD_LABEL: String = "hash"
     const val NOT_YET_ASSIGNED_ID: Long = 0
     const val TEXT_PLAIN_RESPONSE_MEDIA_TYPE = "text/plain"
+    const val NAME_PARAM = "name"
+    const val URL_PARAM = "url"
     const val ERROR_DIALOG_TITLE = "Error"
+
+    // TODO: find or create good ones
+    val RULE_SETS_SEED = listOf(
+        RuleSet(NOT_YET_ASSIGNED_ID, "TEST", null, "URL")
+    )
 }

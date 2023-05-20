@@ -20,9 +20,12 @@ import horizonstudio.apps.pocktel.configurations.Constants.ALL_FILES_PATTERN
 import horizonstudio.apps.pocktel.configurations.Constants.ARCHIVED_FILES_PATTERN
 import horizonstudio.apps.pocktel.configurations.Constants.DATABASE_NAME
 import horizonstudio.apps.pocktel.configurations.Constants.HASH_ARGUMENT_NAME
+import horizonstudio.apps.pocktel.configurations.Constants.NAME_PARAM
 import horizonstudio.apps.pocktel.configurations.Constants.NOT_YET_ASSIGNED_ID
 import horizonstudio.apps.pocktel.configurations.Constants.RESULT_ARGUMENT_NAME
+import horizonstudio.apps.pocktel.configurations.Constants.URL_PARAM
 import horizonstudio.apps.pocktel.contracts.incoming.ScanResultContract
+import horizonstudio.apps.pocktel.dal.DatabaseSeeder
 import horizonstudio.apps.pocktel.dal.PocktelDatabase
 import horizonstudio.apps.pocktel.dal.entities.RuleSet
 import horizonstudio.apps.pocktel.databinding.FragmentScanBinding
@@ -30,7 +33,8 @@ import horizonstudio.apps.pocktel.exceptions.PocktelException
 import horizonstudio.apps.pocktel.exceptions.PocktelInvalidArgumentsException
 import horizonstudio.apps.pocktel.ui.adpters.RuleSetListAdapter
 import horizonstudio.apps.pocktel.ui.dialogs.ErrorDialog.Companion.errorDialog
-import horizonstudio.apps.pocktel.ui.dialogs.RuleSetDialog
+import horizonstudio.apps.pocktel.ui.dialogs.RuleSetDialog.Companion.chooseRuleSetNameDialog
+import horizonstudio.apps.pocktel.ui.dialogs.RuleSetDialog.Companion.chooseRuleSetUrlDialog
 import horizonstudio.apps.pocktel.utils.DatabaseUtil.Companion.buildDatabase
 import horizonstudio.apps.pocktel.utils.FileUtil.Companion.downloadFile
 import horizonstudio.apps.pocktel.utils.FileUtil.Companion.getFileName
@@ -40,8 +44,7 @@ import kotlinx.coroutines.*
 import java.io.File
 import java.net.URL
 
-// TODO: figure out why loading doesnt shows, change animation, find more places for it
-// TODO: DB seed
+// TODO: find good loading animation
 // TODO: beautify layout
 // TODO: PocktelException handling (wrong host)
 // TODO: work with coroutine (db?)
@@ -62,11 +65,9 @@ class ScanFragment : Fragment() {
 
     private var scanner: FileScanner = FileScanner()
     private val ruleSetBl: RuleSetBl by lazy {
-        RuleSetBl(
-            buildDatabase<PocktelDatabase>(
-                requireContext(), DATABASE_NAME
-            ).ruleSetRepository()
-        )
+        val db = buildDatabase<PocktelDatabase>(requireContext(), DATABASE_NAME)
+        DatabaseSeeder(db).seedDatabase()
+        RuleSetBl(db.ruleSetRepository())
     }
 
     override fun onCreateView(
@@ -94,18 +95,15 @@ class ScanFragment : Fragment() {
 
         val chooseRuleSetName = registerForActivityResult(OpenDocument()) { uri: Uri? ->
             uri?.let {
-                val fileName = getFileName(uri, requireContext())
-                RuleSetDialog.chooseRuleSetNameDialog(
-                    requireContext(), saveRuleSet(uri, fileName)
+                chooseRuleSetNameDialog(
+                    requireContext(), saveRuleSet(uri, getFileName(uri, requireContext()))
                 )
             }
         }
 
         val chooseRuleSetUrl = requireView().findViewById<Button>(R.id.chooseRuleUrlButton)
         chooseRuleSetUrl.setOnClickListener {
-            RuleSetDialog.chooseRuleSetUrlDialog(
-                requireContext(), downloadRuleSet()
-            )
+            chooseRuleSetUrlDialog(requireContext(), downloadRuleSet())
         }
 
         binding.scanButton.setOnClickListener {
@@ -134,8 +132,8 @@ class ScanFragment : Fragment() {
             return
         }
 
-        loadingView.visibility = View.VISIBLE
         uiScope.launch {
+            showLoading()
             ruleSetFile = prepareRuleSetFile(binding.ruleSetSpinner.selectedItem as RuleSet)
             val hash = sha256(sampleFile!!)
             val result: ScanResultContract
@@ -144,31 +142,33 @@ class ScanFragment : Fragment() {
                 transferToResultFragment(hash, result)
             } catch (e: PocktelException) {
                 errorDialog(requireContext(), e.message!!)
+            } finally {
+                hideLoading()
             }
         }
-        loadingView.visibility = View.GONE
     }
 
     private fun downloadRuleSet(): OnClickListener {
         return OnClickListener {
             val params = it.tag as HashMap<String, String>
             // TODO: validate inputs
-            loadingView.visibility = View.VISIBLE
-            // TODO: consts
-            val name: String = params["name"]!!
-            val plainUrl: String = params["url"]!!
+
+            showLoading()
+
+            val name: String = params[NAME_PARAM]!!
+            val plainUrl: String = params[URL_PARAM]!!
 
             uiScope.launch {
                 withContext(Dispatchers.IO) {
+                    // TODO: handle filenotfound exception + hideloading in finally clause
                     ruleSetFile = downloadFile(requireContext(), URL(plainUrl))
                     val ruleId = ruleSetBl.save(
                         RuleSet(NOT_YET_ASSIGNED_ID, name, null, plainUrl)
                     )
-
                     updateRuleSetSpinner(ruleId)
+                    hideLoading()
                 }
             }
-            loadingView.visibility = View.GONE
         }
     }
 
@@ -185,7 +185,7 @@ class ScanFragment : Fragment() {
     private fun saveRuleSet(uri: Uri, fileName: String): OnClickListener {
         return OnClickListener { view ->
             // TODO: validate inputs
-            loadingView.visibility = View.VISIBLE
+            showLoading()
             val ruleSetName = view.tag as String
             uiScope.launch {
                 ruleSetFile = saveTempFile(uri, fileName, requireContext())
@@ -196,7 +196,7 @@ class ScanFragment : Fragment() {
                 )
                 updateRuleSetSpinner(ruleId)
             }
-            loadingView.visibility = View.GONE
+            hideLoading()
         }
     }
 
@@ -229,5 +229,17 @@ class ScanFragment : Fragment() {
         if (binding.ruleSetSpinner.isEmpty()) {
             throw PocktelInvalidArgumentsException("Please choose rule set")
         }
+    }
+
+    private fun showLoading() {
+        setLoadingState(View.VISIBLE)
+    }
+
+    private fun hideLoading() {
+        setLoadingState(View.GONE)
+    }
+
+    private fun setLoadingState(state: Int) {
+        uiScope.launch { withContext(Dispatchers.Main) { loadingView.visibility = state } }
     }
 }

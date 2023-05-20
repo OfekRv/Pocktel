@@ -7,7 +7,6 @@ import androidx.room.PrimaryKey
 data class RuleSet(
     @PrimaryKey(autoGenerate = true)
     val id: Long,
-
     val name: String,
     val path: String?,
     val url: String?

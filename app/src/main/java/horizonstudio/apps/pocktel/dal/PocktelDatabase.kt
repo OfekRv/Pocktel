@@ -2,6 +2,7 @@ package horizonstudio.apps.pocktel.dal
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 import horizonstudio.apps.pocktel.dal.entities.RuleSet
 import horizonstudio.apps.pocktel.dal.repositories.RuleSetRepository
 
