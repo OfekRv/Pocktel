@@ -7,11 +7,11 @@ import horizonstudio.apps.pocktel.configurations.Constants.ERROR_DIALOG_TITLE
 
 class ErrorDialog {
     companion object {
-        fun errorDialog(context: Context, message: String) {
-            errorDialog(context, message, null)
+        fun errorDialog(message: String,context: Context) {
+            errorDialog(message, null, context)
         }
 
-        fun errorDialog(context: Context, error: String, listener: OnClickListener?) {
+        fun errorDialog(error: String, listener: OnClickListener?, context: Context) {
             AlertDialog.Builder(context)
                 .setTitle(ERROR_DIALOG_TITLE)
                 .setNegativeButton("Ok", listener)

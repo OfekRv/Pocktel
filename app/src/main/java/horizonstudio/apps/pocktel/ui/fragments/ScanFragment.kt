@@ -42,6 +42,7 @@ import horizonstudio.apps.pocktel.utils.FileUtil.Companion.saveTempFile
 import horizonstudio.apps.pocktel.utils.FileUtil.Companion.sha256
 import kotlinx.coroutines.*
 import java.io.File
+import java.io.FileNotFoundException
 import java.net.URL
 
 // TODO: find good loading animation
@@ -128,7 +129,7 @@ class ScanFragment : Fragment() {
         try {
             validateScanInputs()
         } catch (e: PocktelException) {
-            errorDialog(requireContext(), e.message!!)
+            errorDialog(e.message!!, requireContext())
             return
         }
 
@@ -141,7 +142,7 @@ class ScanFragment : Fragment() {
                 result = scanner.scan(sampleFile!!, ruleSetFile!!)
                 transferToResultFragment(hash, result)
             } catch (e: PocktelException) {
-                errorDialog(requireContext(), e.message!!)
+                errorDialog(e.message!!, requireContext())
             } finally {
                 hideLoading()
             }
@@ -160,11 +161,18 @@ class ScanFragment : Fragment() {
 
             uiScope.launch {
                 withContext(Dispatchers.IO) {
-                    // TODO: handle filenotfound exception + hideloading in finally clause
-                    ruleSetFile = downloadFile(requireContext(), URL(plainUrl))
+                    try {
+                        ruleSetFile = downloadFile(requireContext(), URL(plainUrl))
+                    } catch (e: FileNotFoundException) {
+                        hideLoading()
+                        errorDialog(
+                            "Please choose a url directing to archive file", requireContext()
+                        )
+                    }
                     val ruleId = ruleSetBl.save(
                         RuleSet(NOT_YET_ASSIGNED_ID, name, null, plainUrl)
                     )
+
                     updateRuleSetSpinner(ruleId)
                     hideLoading()
                 }
