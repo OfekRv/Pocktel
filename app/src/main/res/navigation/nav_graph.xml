@@ -19,7 +19,7 @@
                 app:argType="string" />
             <argument
                 android:name="result"
-                app:argType="horizonstudio.apps.pocktel.contracts.incoming.ScanResultContract" />
+                app:argType="horizonstudio.apps.pocktel.dto.ScanResultContract" />
         </action>
     </fragment>
     <fragment
@@ -29,7 +29,7 @@
         tools:layout="@layout/fragment_result">
 
         <action
-            android:id="@+id/action_SecondFragment_to_FirstFragment"
+            android:id="@+id/action_ScanFragment_to_ResultFragment"
             app:destination="@id/ScanFragment" />
     </fragment>
 </navigation>

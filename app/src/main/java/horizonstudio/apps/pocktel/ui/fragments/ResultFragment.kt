@@ -10,10 +10,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import horizonstudio.apps.pocktel.R
 import horizonstudio.apps.pocktel.configurations.Constants.HASH_ARGUMENT_NAME
 import horizonstudio.apps.pocktel.configurations.Constants.HASH_COPY_CLIPBOARD_LABEL
 import horizonstudio.apps.pocktel.configurations.Constants.RESULT_ARGUMENT_NAME
-import horizonstudio.apps.pocktel.contracts.incoming.ScanResultContract
+import horizonstudio.apps.pocktel.dto.ScanResultContract
 import horizonstudio.apps.pocktel.databinding.FragmentResultBinding
 import horizonstudio.apps.pocktel.exceptions.PocktelInvalidArgumentsException
 import horizonstudio.apps.pocktel.ui.adpters.MatchesListAdapter
@@ -47,12 +48,15 @@ class ResultFragment : Fragment() {
         binding.hash.text = hash
 
         binding.copyHashButton.setOnClickListener {
-            val clipboard = context?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = ClipData.newPlainText(HASH_COPY_CLIPBOARD_LABEL, hash)
-            clipboard.setPrimaryClip(clip)
-            Toast.makeText(context, "Hash copied to clipboard", Toast.LENGTH_SHORT).show()
+            context?.let {
+                val clipboard = it.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                val clip = ClipData.newPlainText(HASH_COPY_CLIPBOARD_LABEL, hash)
+                clipboard.setPrimaryClip(clip)
+                Toast.makeText(it, it.resources.getString(R.string.hashCopyToast), Toast.LENGTH_SHORT).show()
+            }
         }
-        binding.matchesList.adapter = MatchesListAdapter(requireContext(), scanResult.matches.toList())
+        binding.matchesList.adapter =
+            MatchesListAdapter(requireContext(), scanResult.matches.toList())
         super.onViewCreated(view, savedInstanceState)
     }
 

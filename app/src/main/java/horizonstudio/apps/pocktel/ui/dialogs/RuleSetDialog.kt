@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import horizonstudio.apps.pocktel.R
+import horizonstudio.apps.pocktel.dto.RuleSetMeta
 
 class RuleSetDialog {
     companion object {
@@ -27,7 +28,7 @@ class RuleSetDialog {
             dialog.findViewById<Button>(R.id.ok_button).setOnClickListener {
                 val name: String = dialog.findViewById<EditText>(R.id.rule_set_name).text.toString()
                 val url: String = dialog.findViewById<EditText>(R.id.rule_set_url).text.toString()
-                it.tag = hashMapOf("name" to name, "url" to url)
+                it.tag = RuleSetMeta(name, url)
                 listener.onClick(it)
                 dialog.dismiss()
             }

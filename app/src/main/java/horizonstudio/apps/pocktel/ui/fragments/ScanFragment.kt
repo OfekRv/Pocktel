@@ -20,15 +20,14 @@ import horizonstudio.apps.pocktel.configurations.Constants.ALL_FILES_PATTERN
 import horizonstudio.apps.pocktel.configurations.Constants.ARCHIVED_FILES_PATTERN
 import horizonstudio.apps.pocktel.configurations.Constants.DATABASE_NAME
 import horizonstudio.apps.pocktel.configurations.Constants.HASH_ARGUMENT_NAME
-import horizonstudio.apps.pocktel.configurations.Constants.NAME_PARAM
 import horizonstudio.apps.pocktel.configurations.Constants.NOT_YET_ASSIGNED_ID
 import horizonstudio.apps.pocktel.configurations.Constants.RESULT_ARGUMENT_NAME
-import horizonstudio.apps.pocktel.configurations.Constants.URL_PARAM
-import horizonstudio.apps.pocktel.contracts.incoming.ScanResultContract
+import horizonstudio.apps.pocktel.dto.ScanResultContract
 import horizonstudio.apps.pocktel.dal.DatabaseSeeder
 import horizonstudio.apps.pocktel.dal.PocktelDatabase
 import horizonstudio.apps.pocktel.dal.entities.RuleSet
 import horizonstudio.apps.pocktel.databinding.FragmentScanBinding
+import horizonstudio.apps.pocktel.dto.RuleSetMeta
 import horizonstudio.apps.pocktel.exceptions.PocktelException
 import horizonstudio.apps.pocktel.exceptions.PocktelInvalidArgumentsException
 import horizonstudio.apps.pocktel.ui.adpters.RuleSetListAdapter
@@ -47,8 +46,6 @@ import java.net.URL
 
 // TODO: find good loading animation
 // TODO: beautify layout
-// TODO: PocktelException handling (wrong host)
-// TODO: work with coroutine (db?)
 class ScanFragment : Fragment() {
     private var _binding: FragmentScanBinding? = null
 
@@ -151,18 +148,14 @@ class ScanFragment : Fragment() {
 
     private fun downloadRuleSet(): OnClickListener {
         return OnClickListener {
-            val params = it.tag as HashMap<String, String>
-            // TODO: validate inputs
+            val params = it.tag as RuleSetMeta
 
             showLoading()
-
-            val name: String = params[NAME_PARAM]!!
-            val plainUrl: String = params[URL_PARAM]!!
 
             uiScope.launch {
                 withContext(Dispatchers.IO) {
                     try {
-                        ruleSetFile = downloadFile(requireContext(), URL(plainUrl))
+                        ruleSetFile = downloadFile(requireContext(), URL(params.url))
                     } catch (e: FileNotFoundException) {
                         hideLoading()
                         errorDialog(
@@ -170,7 +163,7 @@ class ScanFragment : Fragment() {
                         )
                     }
                     val ruleId = ruleSetBl.save(
-                        RuleSet(NOT_YET_ASSIGNED_ID, name, null, plainUrl)
+                        RuleSet(NOT_YET_ASSIGNED_ID, params.name, null, params.url)
                     )
 
                     updateRuleSetSpinner(ruleId)
@@ -192,9 +185,9 @@ class ScanFragment : Fragment() {
 
     private fun saveRuleSet(uri: Uri, fileName: String): OnClickListener {
         return OnClickListener { view ->
-            // TODO: validate inputs
+            val ruleSetName = view.tag as? String
+                ?: throw PocktelInvalidArgumentsException("Could not get rule set name")
             showLoading()
-            val ruleSetName = view.tag as String
             uiScope.launch {
                 ruleSetFile = saveTempFile(uri, fileName, requireContext())
                 val ruleId = ruleSetBl.save(
@@ -219,11 +212,7 @@ class ScanFragment : Fragment() {
         ruleSet.path?.let { return File(ruleSet.path) }
         ruleSet.url?.let {
             return withContext(Dispatchers.IO) {
-                return@withContext downloadFile(
-                    requireContext(), URL(
-                        ruleSet.url
-                    )
-                )
+                return@withContext downloadFile(requireContext(), URL(ruleSet.url))
             }
         }
         throw PocktelInvalidArgumentsException("Could not locate either path nor url of rule set")

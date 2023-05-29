@@ -1,3 +1,3 @@
-package horizonstudio.apps.pocktel.contracts.incoming
+package horizonstudio.apps.pocktel.dto
 
 data class ScanResourceStatusContract(val status: ScanStatus, val result: String?)

@@ -8,14 +8,17 @@ import horizonstudio.apps.pocktel.configurations.Constants.RULES_PARAMETER_NAME
 import horizonstudio.apps.pocktel.configurations.Constants.SAMPLE_PARAMETER_NAME
 import horizonstudio.apps.pocktel.configurations.Constants.TEXT_PLAIN_RESPONSE_MEDIA_TYPE
 import horizonstudio.apps.pocktel.configurations.Constants.TIME_INTERVAL
-import horizonstudio.apps.pocktel.contracts.incoming.ScanResourceContract
-import horizonstudio.apps.pocktel.contracts.incoming.ScanResourceStatusContract
-import horizonstudio.apps.pocktel.contracts.incoming.ScanResultContract
-import horizonstudio.apps.pocktel.contracts.incoming.ScanStatus
+import horizonstudio.apps.pocktel.dto.ScanResourceContract
+import horizonstudio.apps.pocktel.dto.ScanResourceStatusContract
+import horizonstudio.apps.pocktel.dto.ScanResultContract
+import horizonstudio.apps.pocktel.dto.ScanStatus
 import horizonstudio.apps.pocktel.exceptions.PocktelNetworkException
 import horizonstudio.apps.pocktel.exceptions.PocktelYARARuleFileException
 import horizonstudio.apps.pocktel.services.FileScannerService
 import horizonstudio.apps.pocktel.utils.FileUtil.Companion.createMultipartFile
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -33,29 +36,33 @@ class FileScanner {
     }
 
     suspend fun scan(sample: File, rules: File): ScanResultContract {
-        val scanRequestResource = scannerClient.scanWithArchivedRulesSet(
-            createMultipartFile(sample, SAMPLE_PARAMETER_NAME),
-            createMultipartFile(rules, RULES_PARAMETER_NAME)
-        )
+        try {
+            val scanRequestResource = scannerClient.scanWithArchivedRulesSet(
+                createMultipartFile(sample, SAMPLE_PARAMETER_NAME),
+                createMultipartFile(rules, RULES_PARAMETER_NAME)
+            )
 
-        if (!scanRequestResource.isSuccessful) {
-            handleUnsuccessfulRequest(scanRequestResource)
+            if (!scanRequestResource.isSuccessful) {
+                handleUnsuccessfulRequest(scanRequestResource)
+            }
+
+            val scanResultResourceReference: String =
+                getScanResourceReference(scanRequestResource.body()!!.location)
+            return scannerClient.scanResult(scanResultResourceReference).body()!!
+        } catch (e: Exception) {
+            throw PocktelNetworkException("Could not get server response")
         }
-
-        val scanResultResourceReference: String =
-            getScanResourceReference(scanRequestResource.body()!!.location)
-        return scannerClient.scanResult(scanResultResourceReference).body()!!
     }
 
 
     private fun handleUnsuccessfulRequest(scanResource: Response<ScanResourceContract>) {
         scanResource.errorBody()?.let { serverError ->
-                {
-                    if (serverError.contentType()!!.equals(TEXT_PLAIN_RESPONSE_MEDIA_TYPE)) {
-                        throw PocktelYARARuleFileException(serverError.string())
-                    }
+            {
+                if (isPlainResponse(serverError)) {
+                    throw PocktelYARARuleFileException(serverError.string())
                 }
             }
+        }
         throw PocktelNetworkException("Could not get server response")
     }
 
@@ -63,7 +70,7 @@ class FileScanner {
         var scanResultResource: ScanResourceStatusContract
         var tries = 0
         do {
-            Thread.sleep(TIME_INTERVAL)
+            runBlocking { delay(TIME_INTERVAL) }
             scanResultResource = scannerClient.scanStatus(scanResourceLocation).body()!!
         } while (scanResultResource.status == ScanStatus.PENDING && ++tries <= MAX_TRIES)
 
@@ -72,4 +79,7 @@ class FileScanner {
         }
         return scanResultResource.result!!
     }
+
+    private fun isPlainResponse(serverError: ResponseBody) =
+        serverError.contentType()!!.equals(TEXT_PLAIN_RESPONSE_MEDIA_TYPE)
 }

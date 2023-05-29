@@ -1,4 +1,4 @@
-package horizonstudio.apps.pocktel.contracts.incoming
+package horizonstudio.apps.pocktel.dto
 
 import com.squareup.moshi.Json
 

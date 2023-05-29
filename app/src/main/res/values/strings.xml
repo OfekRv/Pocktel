@@ -4,5 +4,9 @@
     <!-- Strings used for fragments for navigation -->
     <string name="scan_fragment_label">Scan file</string>
     <string name="result_fragment_label">Scan result</string>
-    <string name="scan">Scan</string>
+    <string name="scanButton">Scan</string>
+    <!-- Strings used for messages -->
+    <string name="errorDialogOk">OK</string>
+    <string name="errorDialogTitle">Error</string>
+    <string name="hashCopyToast">Hash copied to clipboard</string>
 </resources>

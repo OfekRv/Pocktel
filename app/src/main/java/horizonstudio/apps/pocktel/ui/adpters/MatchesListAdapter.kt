@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
 import horizonstudio.apps.pocktel.R
-import horizonstudio.apps.pocktel.contracts.incoming.YARAMatch
+import horizonstudio.apps.pocktel.dto.YARAMatch
 
 class MatchesListAdapter(
     private val context: Context, private val itemList: List<YARAMatch>
