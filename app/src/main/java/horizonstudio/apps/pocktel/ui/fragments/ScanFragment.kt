@@ -81,7 +81,7 @@ class ScanFragment : Fragment() {
         loadingView = view.findViewById(R.id.loading_view)
 
         spinner = view.findViewById(R.id.rule_set_spinner) as Spinner
-        spinner.adapter = RuleSetListAdapter(requireContext(), ruleSetBl.findAll())
+        spinner.adapter = RuleSetListAdapter(requireContext(), ruleSetBl, ruleSetBl.findAll())
 
         val chooseSample = registerForActivityResult(OpenDocument()) { uri: Uri? ->
             uri?.let {
@@ -178,7 +178,7 @@ class ScanFragment : Fragment() {
         val ruleIndex = rules.indexOfFirst { ruleSet -> ruleSet.id == selectedRuleId }
 
         withContext(Dispatchers.Main) {
-            spinner.adapter = RuleSetListAdapter(requireContext(), rules)
+            spinner.adapter = RuleSetListAdapter(requireContext(), ruleSetBl, rules)
             spinner.setSelection(ruleIndex)
         }
     }
@@ -187,6 +187,7 @@ class ScanFragment : Fragment() {
         return OnClickListener { view ->
             val ruleSetName = view.tag as? String
                 ?: throw PocktelInvalidArgumentsException("Could not get rule set name")
+
             showLoading()
             uiScope.launch {
                 ruleSetFile = saveTempFile(uri, fileName, requireContext())

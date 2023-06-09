@@ -3,7 +3,6 @@ package horizonstudio.apps.pocktel.utils
 import android.content.Context
 import android.content.res.Resources.NotFoundException
 import android.net.Uri
-import android.os.Environment
 import android.provider.OpenableColumns
 import okhttp3.MultipartBody
 import okhttp3.RequestBody

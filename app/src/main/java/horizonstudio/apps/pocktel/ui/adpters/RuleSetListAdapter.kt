@@ -5,15 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.Button
 import android.widget.TextView
 import horizonstudio.apps.pocktel.R
+import horizonstudio.apps.pocktel.bl.RuleSetBl
 import horizonstudio.apps.pocktel.dal.entities.RuleSet
+import horizonstudio.apps.pocktel.dal.repositories.RuleSetRepository
+import horizonstudio.apps.pocktel.ui.dialogs.ErrorDialog
+import horizonstudio.apps.pocktel.ui.dialogs.ErrorDialog.Companion.errorDialog
 
 class RuleSetListAdapter(
-    private val context: Context, private val itemList: List<RuleSet>
+    private val context: Context, private val bl: RuleSetBl, private var itemList: List<RuleSet>
 ) : BaseAdapter() {
-
-    //TODO: add remove button
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         var view = convertView
         val viewHolder: ViewHolder
@@ -29,6 +32,9 @@ class RuleSetListAdapter(
         val item = getItem(position) as RuleSet
         viewHolder.titleTextView.text = item.name
         viewHolder.resourceTextView.text = item.path ?: item.url
+        viewHolder.removeButton.setOnClickListener {
+            deleteRuleSet(item)
+        }
 
         return view!!
     }
@@ -48,5 +54,15 @@ class RuleSetListAdapter(
     private class ViewHolder(view: View) {
         val titleTextView: TextView = view.findViewById(R.id.ruleSetTitle)
         val resourceTextView: TextView = view.findViewById(R.id.resource)
+        val removeButton: Button = view.findViewById(R.id.remove)
+    }
+
+    private fun deleteRuleSet(item: RuleSet) {
+        if (bl.delete(item)) {
+            itemList = bl.findAll()
+            notifyDataSetChanged()
+        } else {
+            errorDialog("Could not delete rule set", context)
+        }
     }
 }
