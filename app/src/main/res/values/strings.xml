@@ -6,13 +6,13 @@
     <string name="result_fragment_label">Scan result</string>
     <string name="remove_text">🗑️</string>
     <string name="scanButton">Scan 🔎</string>
-    <!-- Strings used for messages -->
-    <string name="errorDialogOk">OK</string>
-    <string name="errorDialogTitle">Error</string>
-    <string name="hashCopyToast">Hash copied to clipboard</string>
     <string name="file_resource_dialog_button">file</string>
     <string name="url_resource_dialog_button">url</string>
     <string name="sample_file_input_hint">sample file</string>
     <string name="loading_desc">Loading</string>
     <string name="choose_file_button_text">choose</string>
+    <!-- Strings used for messages -->
+    <string name="errorDialogOk">OK</string>
+    <string name="errorDialogTitle">Error</string>
+    <string name="hashCopyToast">Hash copied to clipboard</string>
 </resources>
