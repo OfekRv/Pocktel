@@ -6,18 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.fragments.ScanFragment">
 
-    <TextView
-        android:id="@+id/ruleText"
-        android:layout_width="149dp"
-        android:layout_height="30dp"
-        android:text="Rules set:"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/sampleFileName"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.369" />
-
     <Button
         android:id="@+id/chooseRuleFileButton"
         android:layout_width="70dp"
@@ -33,13 +21,11 @@
         android:id="@+id/chooseRuleUrlButton"
         android:layout_width="70dp"
         android:layout_height="45dp"
-        android:layout_marginStart="13dp"
         android:text="url"
         app:layout_constraintBottom_toBottomOf="@+id/chooseRuleFileButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/chooseRuleFileButton"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/chooseRuleFileButton" />
 
     <Button
@@ -49,22 +35,10 @@
         android:text="@string/scanButton"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.875" />
-
-    <TextView
-        android:id="@+id/fileText"
-        android:layout_width="83dp"
-        android:layout_height="30dp"
-        android:text="file:"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.099"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.14" />
+        app:layout_constraintVertical_bias="0.572" />
 
     <EditText
         android:id="@+id/sampleFileName"
@@ -72,14 +46,14 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:gravity="start|top"
+        android:hint="sample file"
         android:inputType="textMultiLine"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/chooseFileButton"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/fileText"
-        app:layout_constraintTop_toBottomOf="@+id/fileText"
-        app:layout_constraintVertical_bias="0.053"
-        tools:text="@tools:sample/cities" />
+        app:layout_constraintHorizontal_bias="0.52"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.154" />
 
     <Button
         android:id="@+id/chooseFileButton"
@@ -99,10 +73,10 @@
         android:layout_height="45dp"
         app:layout_constraintBottom_toTopOf="@+id/scanButton"
         app:layout_constraintEnd_toStartOf="@+id/chooseRuleFileButton"
-        app:layout_constraintHorizontal_bias="0.82"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ruleText"
-        app:layout_constraintVertical_bias="0.113" />
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/sampleFileName"
+        app:layout_constraintTop_toBottomOf="@+id/sampleFileName"
+        app:layout_constraintVertical_bias="0.338" />
 
     <ImageView
         android:id="@+id/loading_view"

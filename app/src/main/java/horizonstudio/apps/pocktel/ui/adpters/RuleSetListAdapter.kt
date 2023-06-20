@@ -15,6 +15,7 @@ import horizonstudio.apps.pocktel.ui.dialogs.ErrorDialog
 import horizonstudio.apps.pocktel.ui.dialogs.ErrorDialog.Companion.errorDialog
 
 class RuleSetListAdapter(
+    // TODO: Consider remove the item list and just use the bl
     private val context: Context, private val bl: RuleSetBl, private var itemList: List<RuleSet>
 ) : BaseAdapter() {
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
