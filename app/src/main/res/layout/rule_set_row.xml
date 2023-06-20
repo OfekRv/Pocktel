@@ -10,18 +10,20 @@
         android:layout_height="37dp"
         android:layout_alignParentStart="true"
         android:text="@string/remove_text"
+        android:focusable="false"
         android:backgroundTint="@color/design_default_color_error"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/ruleSetTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignTop="@+id/remove"
         android:layout_alignBottom="@+id/remove"
         android:layout_toEndOf="@+id/remove"
         android:singleLine="true"
+        android:focusable="false"
         android:textSize="16sp"
         android:textStyle="bold"
         android:drawablePadding="10dp"

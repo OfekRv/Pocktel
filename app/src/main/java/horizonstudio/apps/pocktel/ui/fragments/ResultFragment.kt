@@ -19,7 +19,6 @@ import horizonstudio.apps.pocktel.databinding.FragmentResultBinding
 import horizonstudio.apps.pocktel.exceptions.PocktelInvalidArgumentsException
 import horizonstudio.apps.pocktel.ui.adpters.MatchesListAdapter
 
-// TODO: Organize layout
 class ResultFragment : Fragment() {
     private lateinit var hash: String
     private lateinit var scanResult: ScanResultContract
@@ -32,7 +31,7 @@ class ResultFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentResultBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -43,7 +42,7 @@ class ResultFragment : Fragment() {
         }
 
         hash = arguments?.getString(HASH_ARGUMENT_NAME)!!
-        scanResult = arguments?.getParcelable<ScanResultContract>(RESULT_ARGUMENT_NAME)!!
+        scanResult = arguments?.getParcelable(RESULT_ARGUMENT_NAME)!!
         (activity as AppCompatActivity).supportActionBar?.title = hash
         binding.hash.text = hash
 

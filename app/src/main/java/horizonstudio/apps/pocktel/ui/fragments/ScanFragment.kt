@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.Spinner
-import androidx.activity.result.contract.ActivityResultContracts.*
+import androidx.activity.result.contract.ActivityResultContracts.OpenDocument
 import androidx.core.view.isEmpty
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -22,12 +22,12 @@ import horizonstudio.apps.pocktel.configurations.Constants.DATABASE_NAME
 import horizonstudio.apps.pocktel.configurations.Constants.HASH_ARGUMENT_NAME
 import horizonstudio.apps.pocktel.configurations.Constants.NOT_YET_ASSIGNED_ID
 import horizonstudio.apps.pocktel.configurations.Constants.RESULT_ARGUMENT_NAME
-import horizonstudio.apps.pocktel.dto.ScanResultContract
 import horizonstudio.apps.pocktel.dal.DatabaseSeeder
 import horizonstudio.apps.pocktel.dal.PocktelDatabase
 import horizonstudio.apps.pocktel.dal.entities.RuleSet
 import horizonstudio.apps.pocktel.databinding.FragmentScanBinding
 import horizonstudio.apps.pocktel.dto.RuleSetMeta
+import horizonstudio.apps.pocktel.dto.ScanResultContract
 import horizonstudio.apps.pocktel.exceptions.PocktelException
 import horizonstudio.apps.pocktel.exceptions.PocktelInvalidArgumentsException
 import horizonstudio.apps.pocktel.ui.adpters.RuleSetListAdapter
@@ -43,6 +43,7 @@ import kotlinx.coroutines.*
 import java.io.File
 import java.io.FileNotFoundException
 import java.net.URL
+
 
 class ScanFragment : Fragment() {
     private var _binding: FragmentScanBinding? = null

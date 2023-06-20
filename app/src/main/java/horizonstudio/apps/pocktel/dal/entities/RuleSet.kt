@@ -10,5 +10,4 @@ data class RuleSet(
     val name: String,
     val path: String?,
     val url: String?
-) {
-}
+)

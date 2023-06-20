@@ -18,13 +18,16 @@ class RuleSetListAdapter(
 ) : BaseAdapter(), SpinnerAdapter {
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         var view = convertView
-        val chosenRule: TextView =
-            View.inflate(context, android.R.layout.simple_spinner_item, null) as TextView
+        val chosenRule: TextView
 
         if (view == null) {
             view = LayoutInflater.from(context)
                 .inflate(android.R.layout.simple_spinner_item, parent, false)
+            chosenRule = view.findViewById(android.R.id.text1)
+
             view.tag = chosenRule
+        } else {
+            chosenRule = view.tag as TextView
         }
 
         chosenRule.text = (getItem(position) as RuleSet).name

@@ -44,7 +44,10 @@
         android:id="@+id/sampleFileName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:autofillHints="TEST"
+        android:clickable="false"
         android:ems="10"
+        android:enabled="false"
         android:gravity="start|top"
         android:hint="@string/sample_file_input_hint"
         android:inputType="textMultiLine"
@@ -53,8 +56,7 @@
         app:layout_constraintHorizontal_bias="0.52"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.154"
-        android:autofillHints="TEST" />
+        app:layout_constraintVertical_bias="0.154" />
 
     <Button
         android:id="@+id/chooseFileButton"
@@ -74,6 +76,8 @@
         android:layout_height="45dp"
         android:layout_marginBottom="10dp"
         android:spinnerMode="dropdown"
+        android:clickable="false"
+        android:focusable="false"
         app:layout_constraintBottom_toTopOf="@+id/scanButton"
         app:layout_constraintEnd_toStartOf="@+id/chooseRuleFileButton"
         app:layout_constraintHorizontal_bias="0.0"
