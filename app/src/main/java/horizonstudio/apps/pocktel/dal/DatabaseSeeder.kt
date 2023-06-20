@@ -4,6 +4,8 @@ import horizonstudio.apps.pocktel.configurations.Constants.RULE_SETS_SEED
 
 class DatabaseSeeder(private val db: PocktelDatabase) {
     fun seedDatabase() {
-        RULE_SETS_SEED.forEach { rs -> db.ruleSetRepository().insert(rs) }
+        if (db.ruleSetRepository().findAll().isEmpty()) {
+            RULE_SETS_SEED.forEach { rs -> db.ruleSetRepository().insert(rs) }
+        }
     }
 }
