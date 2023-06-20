@@ -1,31 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/ruleSetTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:textStyle="bold"
+    <Button
+        android:id="@+id/remove"
+        android:layout_width="69dp"
+        android:layout_height="37dp"
+        android:layout_alignParentStart="true"
+        android:text="@string/remove_text"
+        android:backgroundTint="@color/design_default_color_error"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/resource"
+        android:id="@+id/ruleSetTitle"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/ruleSetTitle" />
-    <Button
-        android:id="@+id/remove"
-        android:background="#FF0000"
-        android:text="X"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/resource" />
+        android:layout_height="match_parent"
+        android:layout_alignTop="@+id/remove"
+        android:layout_alignBottom="@+id/remove"
+        android:layout_toEndOf="@+id/remove"
+        android:singleLine="true"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:drawablePadding="10dp"
+        android:gravity="center_vertical"/>
 </RelativeLayout>

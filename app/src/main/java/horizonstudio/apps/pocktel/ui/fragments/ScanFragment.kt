@@ -44,8 +44,6 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.net.URL
 
-// TODO: find good loading animation
-// TODO: beautify layout
 class ScanFragment : Fragment() {
     private var _binding: FragmentScanBinding? = null
 

@@ -10,7 +10,7 @@
         android:id="@+id/chooseRuleFileButton"
         android:layout_width="70dp"
         android:layout_height="45dp"
-        android:text="file"
+        android:text="@string/file_resource_dialog_button"
         app:layout_constraintBottom_toBottomOf="@+id/rule_set_spinner"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.756"
@@ -21,7 +21,7 @@
         android:id="@+id/chooseRuleUrlButton"
         android:layout_width="70dp"
         android:layout_height="45dp"
-        android:text="url"
+        android:text="@string/url_resource_dialog_button"
         app:layout_constraintBottom_toBottomOf="@+id/chooseRuleFileButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -46,20 +46,21 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:gravity="start|top"
-        android:hint="sample file"
+        android:hint="@string/sample_file_input_hint"
         android:inputType="textMultiLine"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/chooseFileButton"
         app:layout_constraintHorizontal_bias="0.52"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.154" />
+        app:layout_constraintVertical_bias="0.154"
+        android:autofillHints="TEST" />
 
     <Button
         android:id="@+id/chooseFileButton"
         android:layout_width="113dp"
         android:layout_height="45dp"
-        android:text="choose"
+        android:text="@string/choose_file_button_text"
         app:layout_constraintBottom_toBottomOf="@+id/sampleFileName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.865"
@@ -71,6 +72,8 @@
         android:id="@+id/rule_set_spinner"
         android:layout_width="219dp"
         android:layout_height="45dp"
+        android:layout_marginBottom="10dp"
+        android:spinnerMode="dropdown"
         app:layout_constraintBottom_toTopOf="@+id/scanButton"
         app:layout_constraintEnd_toStartOf="@+id/chooseRuleFileButton"
         app:layout_constraintHorizontal_bias="0.0"
@@ -87,6 +90,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/loading_desc" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

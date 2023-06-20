@@ -6,33 +6,45 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.Button
+import android.widget.SpinnerAdapter
 import android.widget.TextView
 import horizonstudio.apps.pocktel.R
 import horizonstudio.apps.pocktel.bl.RuleSetBl
 import horizonstudio.apps.pocktel.dal.entities.RuleSet
-import horizonstudio.apps.pocktel.dal.repositories.RuleSetRepository
-import horizonstudio.apps.pocktel.ui.dialogs.ErrorDialog
 import horizonstudio.apps.pocktel.ui.dialogs.ErrorDialog.Companion.errorDialog
 
 class RuleSetListAdapter(
-    // TODO: Consider remove the item list and just use the bl
     private val context: Context, private val bl: RuleSetBl, private var itemList: List<RuleSet>
-) : BaseAdapter() {
+) : BaseAdapter(), SpinnerAdapter {
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         var view = convertView
-        val viewHolder: ViewHolder
+        val chosenRule: TextView =
+            View.inflate(context, android.R.layout.simple_spinner_item, null) as TextView
+
+        if (view == null) {
+            view = LayoutInflater.from(context)
+                .inflate(android.R.layout.simple_spinner_item, parent, false)
+            view.tag = chosenRule
+        }
+
+        chosenRule.text = (getItem(position) as RuleSet).name
+        return view!!
+    }
+
+    override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup?): View? {
+        var view = convertView
+        val viewHolder: RuleSetViewHolder
 
         if (view == null) {
             view = LayoutInflater.from(context).inflate(R.layout.rule_set_row, parent, false)
-            viewHolder = ViewHolder(view)
+            viewHolder = RuleSetViewHolder(view)
             view.tag = viewHolder
         } else {
-            viewHolder = view.tag as ViewHolder
+            viewHolder = view.tag as RuleSetViewHolder
         }
 
         val item = getItem(position) as RuleSet
         viewHolder.titleTextView.text = item.name
-        viewHolder.resourceTextView.text = item.path ?: item.url
         viewHolder.removeButton.setOnClickListener {
             deleteRuleSet(item)
         }
@@ -52,9 +64,8 @@ class RuleSetListAdapter(
         return itemList.size
     }
 
-    private class ViewHolder(view: View) {
+    private class RuleSetViewHolder(view: View) {
         val titleTextView: TextView = view.findViewById(R.id.ruleSetTitle)
-        val resourceTextView: TextView = view.findViewById(R.id.resource)
         val removeButton: Button = view.findViewById(R.id.remove)
     }
 
