@@ -35,7 +35,6 @@
     </style>
 
     <style name="Theme.Pocktel.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
     <style name="Theme.Pocktel.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 </resources>

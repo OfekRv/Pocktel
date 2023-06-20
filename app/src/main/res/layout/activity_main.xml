@@ -8,15 +8,13 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/Theme.Pocktel.AppBarOverlay">
+        android:layout_height="wrap_content">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:theme="@style/Theme.Pocktel"
-            app:popupTheme="@style/Theme.Pocktel.PopupOverlay" />
+            android:theme="@style/Theme.Pocktel"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 
