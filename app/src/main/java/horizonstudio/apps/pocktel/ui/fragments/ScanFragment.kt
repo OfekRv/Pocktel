@@ -19,6 +19,7 @@ import horizonstudio.apps.pocktel.bl.scanners.FileScanner
 import horizonstudio.apps.pocktel.configurations.Constants.ALL_FILES_PATTERN
 import horizonstudio.apps.pocktel.configurations.Constants.ARCHIVED_FILES_PATTERN
 import horizonstudio.apps.pocktel.configurations.Constants.DATABASE_NAME
+import horizonstudio.apps.pocktel.configurations.Constants.FILENAME_ARGUMENT_NAME
 import horizonstudio.apps.pocktel.configurations.Constants.HASH_ARGUMENT_NAME
 import horizonstudio.apps.pocktel.configurations.Constants.NOT_YET_ASSIGNED_ID
 import horizonstudio.apps.pocktel.configurations.Constants.RESULT_ARGUMENT_NAME
@@ -132,12 +133,12 @@ class ScanFragment : Fragment() {
         uiScope.launch {
             showLoading()
             ruleSetFile = prepareRuleSetFile(binding.ruleSetSpinner.selectedItem as RuleSet)
-            val filename = binding.sampleFileName
+            val filename = binding.sampleFileName.text.toString()
             val hash = sha256(sampleFile!!)
             val result: ScanResultContract
             try {
                 result = scanner.scan(sampleFile!!, ruleSetFile!!)
-                transferToResultFragment(hash, result)
+                transferToResultFragment(filename, hash, result)
             } catch (e: PocktelException) {
                 errorDialog(e.message!!, requireContext())
             } finally {
@@ -202,8 +203,9 @@ class ScanFragment : Fragment() {
         }
     }
 
-    private fun transferToResultFragment(hash: String, result: ScanResultContract) {
+    private fun transferToResultFragment(filename: String, hash: String, result: ScanResultContract) {
         val args = Bundle()
+        args.putString(FILENAME_ARGUMENT_NAME, filename)
         args.putString(HASH_ARGUMENT_NAME, hash)
         args.putParcelable(RESULT_ARGUMENT_NAME, result)
         findNavController().navigate(R.id.action_ScanFragment_to_ResultFragment, args)

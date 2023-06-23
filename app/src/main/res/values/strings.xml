@@ -11,11 +11,11 @@
     <string name="sample_file_input_hint">sample file</string>
     <string name="loading_desc">Loading</string>
     <string name="choose_file_button_text">choose</string>
+    <string name="rules_matched_title">Rules matched</string>
+    <string name="hash_title">Hash</string>
+    <string name="copy_button_text">copy</string>
     <!-- Strings used for messages -->
     <string name="errorDialogOk">OK</string>
     <string name="errorDialogTitle">Error</string>
     <string name="hashCopyToast">Hash copied to clipboard</string>
-    <string name="rules_matched_title">Rules matched:</string>
-    <string name="hash_title">Hash:</string>
-    <string name="copy_button_text">copy</string>
 </resources>
