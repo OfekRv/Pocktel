@@ -7,69 +7,48 @@
     tools:context=".ui.fragments.ResultFragment">
 
     <TextView
-        android:id="@+id/textview_second"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
         android:id="@+id/hashTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="35dp"
         android:layout_marginTop="36dp"
-        android:text="Hash:"
+        android:text="@string/hash_title"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.093"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.051" />
+        app:layout_constraintVertical_bias="0.048" />
 
     <TextView
         android:id="@+id/rulesTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="35dp"
-        android:text="Rules matched:"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.114"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/hash"
-        app:layout_constraintVertical_bias="0.179" />
+        android:text="@string/rules_matched_title"
+        app:layout_constraintStart_toStartOf="@+id/hashTitle"
+        app:layout_constraintTop_toBottomOf="@+id/copyHashButton" />
 
     <TextView
         android:id="@+id/hash"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.124" />
+        app:layout_constraintEnd_toEndOf="@+id/matchesList"
+        app:layout_constraintStart_toStartOf="@+id/matchesList"
+        app:layout_constraintTop_toBottomOf="@+id/hashTitle" />
 
     <Button
         android:id="@+id/copyHashButton"
-        android:layout_width="128dp"
-        android:layout_height="42dp"
-        android:layout_marginStart="24dp"
-        android:text="copy"
-        app:layout_constraintBottom_toBottomOf="@+id/hashTitle"
-        app:layout_constraintStart_toEndOf="@+id/hashTitle"
-        app:layout_constraintTop_toTopOf="@+id/hashTitle" />
+        android:layout_width="83dp"
+        android:layout_height="39dp"
+        android:text="@string/copy_button_text"
+        app:layout_constraintEnd_toEndOf="@+id/matchesList"
+        app:layout_constraintTop_toBottomOf="@+id/hash" />
 
     <ListView
         android:id="@+id/matchesList"
-        android:layout_width="408dp"
-        android:layout_height="453dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rulesTitle"
-        app:layout_constraintVertical_bias="0.5" />
+        android:layout_width="339dp"
+        android:layout_height="316dp"
+        app:layout_constraintStart_toStartOf="@+id/rulesTitle"
+        app:layout_constraintTop_toBottomOf="@+id/rulesTitle" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

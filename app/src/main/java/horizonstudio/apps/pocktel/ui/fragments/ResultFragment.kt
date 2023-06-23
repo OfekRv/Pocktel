@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import horizonstudio.apps.pocktel.R
+import horizonstudio.apps.pocktel.configurations.Constants.FILENAME_ARGUMENT_NAME
 import horizonstudio.apps.pocktel.configurations.Constants.HASH_ARGUMENT_NAME
 import horizonstudio.apps.pocktel.configurations.Constants.HASH_COPY_CLIPBOARD_LABEL
 import horizonstudio.apps.pocktel.configurations.Constants.RESULT_ARGUMENT_NAME
@@ -20,6 +21,7 @@ import horizonstudio.apps.pocktel.exceptions.PocktelInvalidArgumentsException
 import horizonstudio.apps.pocktel.ui.adpters.MatchesListAdapter
 
 class ResultFragment : Fragment() {
+    private lateinit var filename: String
     private lateinit var hash: String
     private lateinit var scanResult: ScanResultContract
 
@@ -41,9 +43,10 @@ class ResultFragment : Fragment() {
             throw PocktelInvalidArgumentsException("No arguments received")
         }
 
+        filename = arguments?.getString(FILENAME_ARGUMENT_NAME)!!
         hash = arguments?.getString(HASH_ARGUMENT_NAME)!!
         scanResult = arguments?.getParcelable(RESULT_ARGUMENT_NAME)!!
-        (activity as AppCompatActivity).supportActionBar?.title = hash
+        (activity as AppCompatActivity).supportActionBar?.title = filename
         binding.hash.text = hash
 
         binding.copyHashButton.setOnClickListener {

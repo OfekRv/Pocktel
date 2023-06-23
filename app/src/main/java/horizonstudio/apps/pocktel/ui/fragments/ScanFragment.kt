@@ -132,6 +132,7 @@ class ScanFragment : Fragment() {
         uiScope.launch {
             showLoading()
             ruleSetFile = prepareRuleSetFile(binding.ruleSetSpinner.selectedItem as RuleSet)
+            val filename = binding.sampleFileName
             val hash = sha256(sampleFile!!)
             val result: ScanResultContract
             try {
