@@ -8,6 +8,7 @@ import android.view.View.OnClickListener
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.Spinner
 import androidx.activity.result.contract.ActivityResultContracts.OpenDocument
 import androidx.core.view.isEmpty
@@ -45,7 +46,6 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.net.URL
 
-
 class ScanFragment : Fragment() {
     private var _binding: FragmentScanBinding? = null
 
@@ -55,7 +55,7 @@ class ScanFragment : Fragment() {
     private val job = Job()
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
 
-    private lateinit var loadingView: ImageView
+    private lateinit var loadingView: ProgressBar
     private lateinit var spinner: Spinner
 
     private var sampleFile: File? = null
