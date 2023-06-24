@@ -18,8 +18,7 @@ object Constants {
     const val NOT_YET_ASSIGNED_ID: Long = 0
     const val TEXT_PLAIN_RESPONSE_MEDIA_TYPE = "text/plain"
 
-    // TODO: find or create good ones
     val RULE_SETS_SEED = listOf(
-        RuleSet(NOT_YET_ASSIGNED_ID, "TEST", null, "URL")
+        RuleSet(NOT_YET_ASSIGNED_ID, "Yara-Rules Repo", null, "https://github.com/OfekRv/rules/archive/refs/heads/master.zip")
     )
 }
