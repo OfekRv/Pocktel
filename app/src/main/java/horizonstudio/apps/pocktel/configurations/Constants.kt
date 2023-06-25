@@ -5,8 +5,8 @@ import horizonstudio.apps.pocktel.dal.entities.RuleSet
 object Constants {
     const val DATABASE_NAME:String = "pocktel"
     const val BASE_URL:String = "https://yarapi-a2zphhdpma-uc.a.run.app"
-    const val MAX_TRIES: Int = 20
-    const val TIME_INTERVAL: Long = 500
+    const val MAX_TRIES: Int = 30
+    const val TIME_INTERVAL: Long = 2000
     const val FILENAME_ARGUMENT_NAME: String = "filename"
     const val HASH_ARGUMENT_NAME: String = "hash"
     const val RESULT_ARGUMENT_NAME: String = "result"
