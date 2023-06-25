@@ -1,24 +1,29 @@
 package horizonstudio.apps.pocktel.ui.fragments
 
 import android.content.ClipData
-import android.content.Context
 import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import horizonstudio.apps.pocktel.R
 import horizonstudio.apps.pocktel.configurations.Constants.FILENAME_ARGUMENT_NAME
 import horizonstudio.apps.pocktel.configurations.Constants.HASH_ARGUMENT_NAME
 import horizonstudio.apps.pocktel.configurations.Constants.HASH_COPY_CLIPBOARD_LABEL
 import horizonstudio.apps.pocktel.configurations.Constants.RESULT_ARGUMENT_NAME
-import horizonstudio.apps.pocktel.dto.ScanResultContract
+import horizonstudio.apps.pocktel.configurations.Constants.VT_HASH_SUMMARY_ROUTE
+import horizonstudio.apps.pocktel.configurations.Constants.VT_HASH_URL
 import horizonstudio.apps.pocktel.databinding.FragmentResultBinding
+import horizonstudio.apps.pocktel.dto.ScanResultContract
 import horizonstudio.apps.pocktel.exceptions.PocktelInvalidArgumentsException
 import horizonstudio.apps.pocktel.ui.adpters.MatchesListAdapter
+
 
 class ResultFragment : Fragment() {
     private lateinit var filename: String
@@ -54,9 +59,19 @@ class ResultFragment : Fragment() {
                 val clipboard = it.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 val clip = ClipData.newPlainText(HASH_COPY_CLIPBOARD_LABEL, hash)
                 clipboard.setPrimaryClip(clip)
-                Toast.makeText(it, it.resources.getString(R.string.hashCopyToast), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    it,
+                    it.resources.getString(R.string.hashCopyToast),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
+
+        binding.vtButton.setOnClickListener {
+            // TODO: extract to VT service
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("$VT_HASH_URL$hash/$VT_HASH_SUMMARY_ROUTE")))
+        }
+
         binding.matchesList.adapter =
             MatchesListAdapter(requireContext(), scanResult.matches.toList())
         super.onViewCreated(view, savedInstanceState)

@@ -18,4 +18,5 @@
     <string name="errorDialogOk">OK</string>
     <string name="errorDialogTitle">Error</string>
     <string name="hashCopyToast">Hash copied to clipboard</string>
+    <string name="vt_button_text">VT</string>
 </resources>

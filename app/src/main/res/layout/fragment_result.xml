@@ -44,6 +44,15 @@
         app:layout_constraintEnd_toEndOf="@+id/matchesList"
         app:layout_constraintTop_toBottomOf="@+id/hash" />
 
+    <Button
+        android:id="@+id/vtButton"
+        android:layout_width="83dp"
+        android:layout_height="39dp"
+        android:layout_marginEnd="4dp"
+        android:text="@string/vt_button_text"
+        app:layout_constraintEnd_toStartOf="@+id/copyHashButton"
+        app:layout_constraintTop_toTopOf="@+id/copyHashButton" />
+
     <ListView
         android:id="@+id/matchesList"
         android:layout_width="339dp"
